@@ -60,7 +60,7 @@ class Attempts(models.Model):
     data_time = models.DateTimeField(verbose_name='дата и время')
     status = models.CharField(max_length=300, verbose_name='статус отправки')
     comment = models.TextField(verbose_name='ответ почтового сервиса', **NULLABLE)
-    massage = models.ForeignKey(Message, verbose_name='сообщение')
+    massage = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.data_time}, {self.status}, {self.massage}'
