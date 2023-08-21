@@ -1,9 +1,10 @@
-from django.urls import path
+from mailing.views import MailingListView
 from mailing.apps import MailingConfig
+from django.urls import path
 
 
 app_name = MailingConfig.name
 
 urlpatterns = [
-    path('', ..., name='list_mailing'),
+    path('', MailingListView, name='list_mailing'),
 ]
