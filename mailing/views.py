@@ -1,8 +1,10 @@
+from django.views.generic import ListView
 from django.shortcuts import render
-from msilib.schema import ListView
+from mailing.models import Mailin
+
 
 # Create your views here.
 
 
-# class MailingListView(ListView):
-#     model = Mailin
+class MailinListView(ListView):
+    model = Mailin
