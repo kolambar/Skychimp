@@ -1,0 +1,15 @@
+<!-- Example row of columns -->
+        <div class="row">
+          <div class="col-md-4">
+            <h2>Название: "{{ object.name|title }}"</h2>
+            <p>Время отправки: {{ object.mail_time }}</p>
+            <p>Периодичность: {{ object.interval }}</p>
+              {% if object.status %}
+                <p>Активна</p>
+              {% else %}
+                <p>Не активна</p>
+              {% endif %}
+            <p><a class="btn btn-secondary" href="{% url 'mailing:detail_mailing' object.slug %}" role="button">Детали &raquo;</a></p>
+          </div>
+        </div>
+        <hr>

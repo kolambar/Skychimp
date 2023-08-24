@@ -11,14 +11,13 @@ NULLABLE = {'blank': True, 'null': True}
 
 class Mailin(models.Model):
     name = models.CharField(max_length=150, verbose_name='название рассылки', unique=True)
-    slug = models.SlugField(unique=True, blank=True, verbose_name='название рассылки')
-    mail_time = models.CharField(verbose_name='время рассылки')  # xx:xx / час:минута
-    interval = models.CharField(verbose_name='интервал рассылки')  # xxxx-xx-xx / год-месяц-день
+    slug = models.SlugField(unique=True, blank=True, verbose_name='slug')
+    mail_time = models.CharField(max_length=5, verbose_name='время рассылки')  # xx:xx / час:минута
+    interval = models.CharField(max_length=15, verbose_name='интервал рассылки')  # xxxx-xx-xx / год-месяц-день
     status = models.BooleanField(verbose_name='запущена', default=True)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(unidecode(str(Mailin)))
+        self.slug = slugify(unidecode(str(self.name)))
         super().save(*args, **kwargs)
 
     def __str__(self):
