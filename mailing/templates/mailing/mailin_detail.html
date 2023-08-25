@@ -22,6 +22,9 @@
           {% for client in object.Client %}
             <p>- {{object.Client.name}} ({{object.Client.email}})<p>
           {% endfor %}
+        <hr>
+        <p><a class="btn btn-secondary" href="{% url 'mailing:detail_mailing' object.slug %}" role="button">Изменить &raquo;</a></p>
+        <a class="btn btn-danger" href="{% url 'mailing:delete_mailing' object.slug %}" role="button">Удалить &raquo;</a></p>
       </div>
 
 

@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView
+from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
 from django.shortcuts import render
 from mailing.models import Mailin
 
@@ -19,3 +19,14 @@ class MailinCreateView(CreateView):
 
 class MailinDetailView(DetailView):
     model = Mailin
+
+
+class MailinDeleteView(DeleteView):
+    model = Mailin  # Модель
+    success_url = reverse_lazy('mailing:mailing_list')
+
+
+class MailinUpdateView(UpdateView):
+    model = Mailin  # Модель
+    fields = ('name', 'mail_time', 'interval', 'status')  # Поля для редактирования
+    success_url = reverse_lazy('students:list')  # Адрес для перенаправления после успешного редактирования
