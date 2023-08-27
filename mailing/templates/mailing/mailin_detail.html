@@ -19,12 +19,15 @@
         <hr>
 
           <p>Клиенты:<p>
-          {% for client in object.Client %}
-            <p>- {{object.Client.name}} ({{object.Client.email}})<p>
+          {% for client in list_clients %}
+            <p>- {{client.name}} ({{client.email}})<p>
+            <p><a class="btn btn-secondary" href="{% url 'mailing:detail_client' client.pk %}" role="button">Подробнее &raquo;</a></p>
+
+
           {% endfor %}
         <hr>
-        <p><a class="btn btn-secondary" href="{% url 'mailing:detail_mailing' object.slug %}" role="button">Изменить &raquo;</a></p>
-        <a class="btn btn-danger" href="{% url 'mailing:delete_mailing' object.slug %}" role="button">Удалить &raquo;</a></p>
+        <p><a class="btn btn-secondary" href="{% url 'mailing:update_mailing' object.slug %}" role="button">Изменить &raquo;</a></p>
+        <a class="btn btn-danger" href="{% url 'mailing:delete_mailing' object.slug %}" role="button">Удалить &raquo;</a>
       </div>
 
 

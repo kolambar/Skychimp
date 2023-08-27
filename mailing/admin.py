@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from mailing.models import Mailin, Client, Message, Attempts
+from mailing.models import Mailin, Client, Message, AttemptsLog
 
 
 # Register your models here.
@@ -8,9 +8,9 @@ from mailing.models import Mailin, Client, Message, Attempts
 
 @admin.register(Mailin)
 class MailinAdmin(admin.ModelAdmin):
-    list_display = ('name', 'mail_time', 'interval', 'status',)
+    list_display = ('name', 'start_time', 'finish_time', 'interval', 'message',)
     list_filter = ('status',)
-    search_fields = ('name', 'mail_time', 'interval', 'slug',)
+    search_fields = ('name', 'start_time', 'finish_time', 'interval', 'slug', 'message',)
 
 
 @admin.register(Client)
@@ -22,12 +22,12 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'mailing',)
-    search_fields = ('name', 'mailin',)
+    list_display = ('name',)
+    search_fields = ('name',)
 
 
-@admin.register(Attempts)
+@admin.register(AttemptsLog)
 class AttemptsAdmin(admin.ModelAdmin):
-    list_display = ('data_time', 'status', 'comment')
+    list_display = ('lust_time', 'status', 'comment')
     list_filter = ('status',)
-    search_fields = ('data_time', 'status', 'comment',)
+    search_fields = ('lust_time', 'status', 'comment',)

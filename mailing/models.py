@@ -9,12 +9,39 @@ from django.db import models
 NULLABLE = {'blank': True, 'null': True}
 
 
+class Message(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Название/тема')
+    text = models.TextField(verbose_name='текст')
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
+
+
 class Mailin(models.Model):
-    name = models.CharField(max_length=150, verbose_name='название рассылки', unique=True)
+
+    INTERVAL_CHOICES = (
+        ('daily', 'ежедневно'),
+        ('weekly', 'еженедельно'),
+        ('monthly', 'ежемесячно'),
+    )
+
+    STATUS_CHOICES = (
+        ('active', 'Активный'),
+        ('inactive', 'Неактивный'),
+        ('pending', 'В ожидании'),
+    )
+
+    name = models.CharField(max_length=150, unique=True, verbose_name='название рассылки')
     slug = models.SlugField(unique=True, blank=True, verbose_name='slug')
-    mail_time = models.CharField(max_length=5, verbose_name='время рассылки')  # xx:xx / час:минута
-    interval = models.CharField(max_length=15, verbose_name='интервал рассылки')  # xxxx-xx-xx / год-месяц-день
-    status = models.BooleanField(verbose_name='запущена', default=True)
+    start_time = models.DateTimeField(verbose_name='время старта рассылки', **NULLABLE)
+    finish_time = models.DateTimeField(verbose_name='время остановки рассылки', **NULLABLE)
+    interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, verbose_name='интервал рассылки')
+    status = models.CharField(max_length=10, blank=True, default='pending', verbose_name='статус')
+    message = models.ForeignKey(Message, verbose_name='рассылка', on_delete=models.CASCADE, **NULLABLE)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(unidecode(str(self.name)))
@@ -42,27 +69,14 @@ class Client(models.Model):
         verbose_name_plural = 'Клиенты'
 
 
-class Message(models.Model):
-    name = models.CharField(max_length=150, verbose_name='Название/тема')
-    text = models.TextField(verbose_name='текст')
-    mailing = models.ForeignKey(Mailin, verbose_name='рассылка', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.name}, {self.mailing}'
-
-    class Meta:
-        verbose_name = 'Сообщение'
-        verbose_name_plural = 'Сообщения'
-
-
-class Attempts(models.Model):
-    data_time = models.DateTimeField(verbose_name='дата и время')
-    status = models.CharField(max_length=300, verbose_name='статус отправки')
+class AttemptsLog(models.Model):
+    lust_time = models.DateTimeField(verbose_name='дата и время', auto_now_add=True)
+    status = models.BooleanField(verbose_name='статус отправки')
     comment = models.TextField(verbose_name='ответ почтового сервиса', **NULLABLE)
     massage = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.data_time}, {self.status}, {self.massage}'
+        return f'{self.lust_time}, {self.status}, {self.massage}'
 
     class Meta:
         verbose_name = 'Попытка'
