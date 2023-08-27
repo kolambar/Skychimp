@@ -87,3 +87,14 @@ class MessageCreateView(CreateView):
     model = Message
     fields = ('name', 'text',)
     success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
+
+
+class MessageUpdateView(UpdateView):
+    model = Message
+    fields = ('name', 'text',)
+    success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
+
+
+class MessageDeleteView(DeleteView):
+    model = Message  # Модель
+    success_url = reverse_lazy('mailing:mailing_list')
