@@ -13,8 +13,8 @@
         {% include 'includs/inc_mailin.html' %}
 
           <p>Сообщения:<p>
-          {% for message in object.Message %}
-            <p>{{object.Message.name}}<p>
+          {% for message in object.message.all %}
+            <p>{{ message }}<p>
           {% endfor %}
         <hr>
 

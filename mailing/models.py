@@ -41,7 +41,7 @@ class Mailin(models.Model):
     finish_time = models.DateTimeField(verbose_name='время остановки рассылки', **NULLABLE)
     interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, verbose_name='интервал рассылки')
     status = models.CharField(max_length=10, blank=True, default='pending', verbose_name='статус')
-    message = models.ForeignKey(Message, verbose_name='рассылка', on_delete=models.CASCADE, **NULLABLE)
+    message = models.ManyToManyField(Message, verbose_name='сообщение', **NULLABLE)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(unidecode(str(self.name)))

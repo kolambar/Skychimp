@@ -8,9 +8,9 @@ from mailing.models import Mailin, Client, Message, AttemptsLog
 
 @admin.register(Mailin)
 class MailinAdmin(admin.ModelAdmin):
-    list_display = ('name', 'start_time', 'finish_time', 'interval', 'message',)
+    list_display = ('name', 'start_time', 'finish_time', 'interval',)
     list_filter = ('status',)
-    search_fields = ('name', 'start_time', 'finish_time', 'interval', 'slug', 'message',)
+    search_fields = ('name', 'start_time', 'finish_time', 'interval', 'slug',)
 
 
 @admin.register(Client)

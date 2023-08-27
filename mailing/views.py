@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
 from django.shortcuts import render
-from mailing.models import Mailin
+from mailing.models import Mailin, AttemptsLog, Message
 from django import forms
 from .models import Mailin, Client
 
@@ -61,9 +61,29 @@ class ClientDetailView(DetailView):
 
 
 class ClientUpdateView(UpdateView):
-    model = Client  # Модель
-    fields = ('name', 'comment', 'email',)
+    model = Client
+    fields = ('name', 'comment', 'email', 'mailin')
 
     def get_success_url(self):
         return reverse('mailing:detail_client', args=[self.kwargs.get('pk')])
 
+
+class ClientCreateView(CreateView):
+    model = Client
+    fields = ('name', 'comment', 'email', 'mailin')
+
+    success_url = reverse_lazy('mailing:mailing_list')
+
+
+class ClientListView(ListView):
+    model = Client
+
+
+class AttemptsLogListView(ListView):
+    model = AttemptsLog
+
+
+class MessageCreateView(CreateView):
+    model = Message
+    fields = ('name', 'text',)
+    success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
