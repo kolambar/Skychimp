@@ -1,0 +1,18 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3">Список рассылок</h1>
+          <p>В этом разделе вы можете посмотреть список рассылок или добавить новую.<p>
+          <a class="btn btn-primary btn-lg" href="create_mailing" role="button">Добавить рассылку &raquo;</a></p>
+        </div>
+      </div>
+      <div class="container">
+        {% for object in object_list %}
+            {% include 'includs/inc_mailin.html' %}
+        {% endfor %}
+      </div> <!-- /container -->
+
+{% endblock %}

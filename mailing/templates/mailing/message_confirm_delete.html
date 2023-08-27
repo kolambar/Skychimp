@@ -1,0 +1,18 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+      <h1 class="display-3">Удалить сообщения "{{object.name}}"</h1>
+      <p>Сообщение нельзя будет восстановить.</p>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="btn-group" role="group">
+                    <button role="submit" class="btn btn-danger">Удалить &raquo;</button>
+                    <a class="btn btn-primary btn-lg" href="/" role="button">Отменить удаление &raquo;</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
