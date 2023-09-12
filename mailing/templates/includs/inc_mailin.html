@@ -1,9 +1,10 @@
 <!-- Example row of columns -->
         <div class="row">
-          <div class="col-md-4">
-            <h2>Название: "{{ object.name|title }}"</h2>
-            <p>Время отправки: {{ object.mail_time }}</p>
-            <p>Периодичность: {{ object.interval }}</p>
+          <div class="col-md-5">
+            <h2>Название: "{{object.name|title}}"</h2>
+            <p>Время старта рассылки: {{object.start_time}}</p>
+            <p>Время окончания рассылки: {{object.finish_time}}</p>
+            <p>Периодичность: {{object.interval}}</p>
               {% if object.status %}
                 <p>Активна</p>
               {% else %}
