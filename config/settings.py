@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django_crontab',
 
     'mailing',
+    'users',
+    'blog',
 ]
 
 
@@ -134,14 +136,20 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = (
         BASE_DIR / 'static',
 )
+
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = '/'
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
