@@ -1,0 +1,30 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Вход</h1>
+</div>
+
+<div class="container-fluid">
+    <div class="row text-start">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Заполните поля</h4>
+
+                </div>
+                <div class="card-body">
+                    <form method="post" action="" class="form-floating">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Войти</button>
+                        <a href="{% url 'users:password_reset' %}" class="btn btn-lg btn-block btn-outline-primary">Забыл пароль</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
