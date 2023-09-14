@@ -11,6 +11,8 @@ class Command(BaseCommand):
             email='admin@gmail.com',
             first_name='Admin',
             last_name='Admin',
+            verified_password=1,
+            verified=True,
             is_superuser=True,
             is_staff=True,
             is_active=True

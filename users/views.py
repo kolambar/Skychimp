@@ -43,9 +43,16 @@ class RegisterView(CreateView):
             i = randint(0, 9)
             verified_password += str(i)
 
+
         form.verified_password = verified_password
-        user = form.save()
+
+
+        user = form.save(commit=False)
+
+
         user.verified_password = verified_password
+
+
         send_mail(
             subject='Верификация почты',
             message=f'Если вы регистрировались в Skystore: нажмите на ссылку: http://127.0.0.1:8000/users/verifying?code={user.verified_password}\n Так вы подтвердите почту',
@@ -53,6 +60,7 @@ class RegisterView(CreateView):
             recipient_list=[user.email]
         )
 
+        print(verified_password)
         return super().form_valid(form)
 
 

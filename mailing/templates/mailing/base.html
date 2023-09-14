@@ -38,14 +38,30 @@
           <li class="nav-item">
             <a class="nav-link" href="/log_list">Мониторинг</a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Добавить</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="/create_mailing">Рассылку</a>
-              <a class="dropdown-item" href="/create_client">Клиента</a>
-              <a class="dropdown-item" href="/create_message">Сообщение</a>
-            </div>
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Добавить</a>
+              <div class="dropdown-menu" aria-labelledby="dropdown01">
+                <a class="dropdown-item" href="/create_mailing">Рассылку</a>
+                <a class="dropdown-item" href="/create_client">Клиента</a>
+                <a class="dropdown-item" href="/create_message">Сообщение</a>
+              </div>
+            </li>
+          {% endif %}
+
+          <li class="nav-item">
+            {% if user.is_authenticated %}
+              <a class="text-muted" href="{% url 'users:logout' %}">Выйти</a>
+              <div class="col=1"></div>
+              <a class="text-muted" href="/products_create/">Добавить продукт</a>
+            {% else %}
+              <a class="text-muted" href="{% url 'users:login' %}">Войти</a>
+              <div class="col=1"></div>
+              <a class="text-muted" href="{% url 'users:register' %}">Зарегистрироваться</a>
+              <div class="col=1"></div>
+            {% endif %}
           </li>
+
         </ul>
 
       </div>
