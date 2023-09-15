@@ -13,7 +13,7 @@ NULLABLE = {'blank': True, 'null': True}
 class Message(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название/тема')
     text = models.TextField(verbose_name='текст')
-    owner = models.ForeignKey(User, verbose_name='создатель', default=None, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}'
@@ -44,7 +44,7 @@ class Mailin(models.Model):
     interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, verbose_name='интервал рассылки')
     status = models.CharField(max_length=10, blank=True, default='pending', verbose_name='статус')
     message = models.ManyToManyField(Message, verbose_name='сообщение', **NULLABLE)
-    owner = models.ForeignKey(User, verbose_name='создатель', default=None, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
 
     def save(self, *args, **kwargs):
@@ -64,7 +64,7 @@ class Client(models.Model):
     email = models.EmailField(unique=True, verbose_name='электронная почта')
     comment = models.TextField(verbose_name='комментарий', **NULLABLE)
     mailin = models.ManyToManyField(Mailin, verbose_name='рассылки')
-    owner = models.ForeignKey(User, verbose_name='создатель', default=None, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}, {self.email}'
