@@ -46,7 +46,6 @@ class Mailin(models.Model):
     message = models.ManyToManyField(Message, verbose_name='сообщение', **NULLABLE)
     owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
-
     def save(self, *args, **kwargs):
         self.slug = slugify(unidecode(str(self.name)))
         super().save(*args, **kwargs)

@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import request
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
 from mailing.models import AttemptsLog, Message
@@ -12,10 +14,16 @@ class MailinListView(ListView):
     model = Mailin
 
 
-class MailinCreateView(CreateView):
+class MailinCreateView(LoginRequiredMixin, CreateView):
     model = Mailin
     form_class = MailinCreateForm
-    success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного создания
+    success_url = '/'  # Адрес для перенаправления после успешного создания
+
+    def form_valid(self, form):
+        user = self.request.user
+        form = form.save()
+        form.owner = user
+        return super().form_valid(form)
 
 
 class MailinDetailView(DetailView):
@@ -52,11 +60,17 @@ class ClientUpdateView(UpdateView):
         return reverse('mailing:detail_client', args=[self.kwargs.get('pk')])
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     fields = ('name', 'comment', 'email', 'mailin')
 
     success_url = reverse_lazy('mailing:mailing_list')
+
+    def form_valid(self, form):
+        user = self.request.user
+        form = form.save()
+        form.owner = user
+        return super().form_valid(form)
 
 
 class ClientListView(ListView):
@@ -67,10 +81,16 @@ class AttemptsLogListView(ListView):
     model = AttemptsLog
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     fields = ('name', 'text',)
     success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
+
+    def form_valid(self, form):
+        user = self.request.user
+        form = form.save()
+        form.owner = user
+        return super().form_valid(form)
 
 
 class MessageUpdateView(UpdateView):
