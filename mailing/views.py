@@ -31,7 +31,7 @@ class MailinListView(ListView):
 class MailinCreateView(LoginRequiredMixin, CreateView):
     model = Mailin
     form_class = MailinCreateForm
-    success_url = '/'  # Адрес для перенаправления после успешного создания
+    success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного создания
 
     def form_valid(self, form):
         user = self.request.user
@@ -39,12 +39,6 @@ class MailinCreateView(LoginRequiredMixin, CreateView):
         self.object.owner = user
 
         return super().form_valid(form)
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #
-    #     context['user'] = self.request.user
-    #     return context
 
 
 class MailinDetailView(LoginRequiredMixin, DetailView):
@@ -60,7 +54,7 @@ class MailinDetailView(LoginRequiredMixin, DetailView):
 
 class MailinDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailin  # Модель
-    success_url = reverse_lazy('mailing:mailing_list')
+    success_url = reverse_lazy('mailin:mailing_list')
 
 
 class MailinUpdateView(LoginRequiredMixin, UpdateView):
@@ -68,7 +62,7 @@ class MailinUpdateView(LoginRequiredMixin, UpdateView):
 
     # тут нужно получить только клиентов этого пользователя
     form_class = MailinUpdateForm
-    success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
+    success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного редактирования
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
@@ -80,20 +74,22 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     fields = ('name', 'comment', 'email', 'mailin')
 
     def get_success_url(self):
-        return reverse('mailing:detail_client', args=[self.kwargs.get('pk')])
+        return reverse('mailin:detail_client', args=[self.kwargs.get('pk')])
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     fields = ('name', 'comment', 'email', 'mailin')
 
-    success_url = reverse_lazy('mailing:mailing_list')
-
-    def form_valid(self, form):
+    def form_valid(self, form):  # присваивает только что созданного клиента пользователю
         user = self.request.user
-        form = form.save()
-        form.owner = user
+        instance = form.save(commit=False)
+        instance.owner = user
+        instance.save()
+        form.save_m2m()  # сохранят связи ManyToMany
         return super().form_valid(form)
+
+    success_url = reverse_lazy('mailin:mailing_list')
 
 
 class ClientListView(ListView):
@@ -113,7 +109,7 @@ class AttemptsLogListView(ListView):
 class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     fields = ('name', 'text',)
-    success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
+    success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного редактирования
 
     def form_valid(self, form):
         user = self.request.user
@@ -125,12 +121,12 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     fields = ('name', 'text',)
-    success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
+    success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного редактирования
 
 
 class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message  # Модель
-    success_url = reverse_lazy('mailing:mailing_list')
+    success_url = reverse_lazy('mailin:mailing_list')
 
 
 class ManagerPassesTestMixin(UserPassesTestMixin):
@@ -142,7 +138,7 @@ class ManagerPassesTestMixin(UserPassesTestMixin):
 class MailinManagerUpdateView(ManagerPassesTestMixin, UpdateView):
     model = Mailin
     fields = ('status',)
-    success_url = reverse_lazy('mailing:mailing_list')
+    success_url = '/'
 
 
 class UserListView(ManagerPassesTestMixin, ListView):
@@ -153,7 +149,7 @@ class UserListView(ManagerPassesTestMixin, ListView):
 class UserUpdateView(ManagerPassesTestMixin, UpdateView):
     model = User
     fields = ('is_active',)
-    success_url = reverse_lazy('mailing:mailing_list')
+    success_url = '/user_list'
     template_name = 'mailing/user_form.html'
 
 
