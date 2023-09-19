@@ -61,6 +61,7 @@ class BlogCreateView(ContentManagerPassMixin, CreateView):
 class BlogUpdateView(ContentManagerPassMixin, UpdateView):
     model = Blog
     fields = ('header', 'text', 'image',)
+    success_url = reverse_lazy('blog:blog_list')
 
     def test_func(self):
         return self.request.user.groups.filter(name='сontent_manager').exists()

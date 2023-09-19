@@ -1,0 +1,19 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3">Добро пожаловать на Skychimp</h1>
+              <p>Нам доверили уже {{ all_mailing_num }} рассылок!<p>
+              <p>А в активном режиме находится {{ active_mailing_num }}!<p>
+              <a class="btn btn-primary btn-lg" href="create_mailing" role="button">Добавить рассылку &raquo;</a></p>
+        </div>
+      </div>
+      <div class="container">
+        {% for object in articles %}
+            {% include 'includs/inc_blog.html' %}
+        {% endfor %}
+      </div> <!-- /container -->
+
+{% endblock %}
