@@ -1,5 +1,6 @@
+from django.contrib.auth.models import Group
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from pytils.translit import slugify
 
@@ -7,9 +8,22 @@ from blog.models import Blog
 
 
 # Create your views here.
+class ContentManagerMixin:
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        content_manager_group = Group.objects.get(name='сontent_manager')
+        context['сontent_managers'] = content_manager_group.user_set.all()
+        return context
 
 
-class BlogListView(ListView):
+class ContentManagerPassMixin(UserPassesTestMixin):
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='сontent_manager').exists()
+
+
+class BlogListView(ContentManagerMixin, ListView):
     model = Blog
 
     def get_queryset(self, *args, **kwargs):
@@ -18,7 +32,7 @@ class BlogListView(ListView):
         return queryset
 
 
-class BlogDetailView(DetailView):
+class BlogDetailView(ContentManagerMixin, DetailView):
     model = Blog
 
     def get_object(self, queryset=None):
@@ -28,10 +42,10 @@ class BlogDetailView(DetailView):
         return self.object
 
 
-class BlogCreateView(LoginRequiredMixin, CreateView):
+class BlogCreateView(ContentManagerPassMixin, CreateView):
     model = Blog
     fields = ('header', 'text', 'image',)
-    success_url = reverse_lazy('catalog:blog_list')
+    success_url = reverse_lazy('blog:blog_list')
 
     def form_valid(self, form):
         if form.is_valid():
@@ -42,14 +56,14 @@ class BlogCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class BlogUpdateView(LoginRequiredMixin, UpdateView):     # настроить настройки приватности
+class BlogUpdateView(ContentManagerPassMixin, UpdateView):
     model = Blog
     fields = ('header', 'text', 'image',)
 
-    def get_success_url(self):
-        return reverse('catalog:blog_view', args=[self.object.slug])
+    def test_func(self):
+        return self.request.user.groups.filter(name='сontent_manager').exists()
 
 
-class BlogDeleteView(LoginRequiredMixin, DeleteView):
+class BlogDeleteView(ContentManagerPassMixin, DeleteView):
     model = Blog
-    success_url = reverse_lazy('catalog:blog_list')
+    success_url = reverse_lazy('blog:blog_list')
