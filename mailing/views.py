@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import QuerySet
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
+from users.models import User
 from .forms import MailinCreateForm, MailinUpdateForm
 from mailing.models import AttemptsLog, Message
 from django.urls import reverse_lazy, reverse
@@ -18,7 +20,7 @@ class MailinListView(ListView):
         user = self.request.user
         if isinstance(user, AnonymousUser):
             return Mailin.objects.none()
-        elif user.is_staff:
+        elif user.groups.filter(name='manager').exists():
             return super().get_queryset()
         return Mailin.objects.filter(owner=user)
 
@@ -126,3 +128,27 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
 class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message  # Модель
     success_url = reverse_lazy('mailing:mailing_list')
+
+
+class ManagerPassesTestMixin(UserPassesTestMixin):
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='manager').exists()
+
+
+class MailinManagerUpdateView(ManagerPassesTestMixin, UpdateView):
+    model = Mailin
+    fields = ('status',)
+    success_url = reverse_lazy('mailing:mailing_list')
+
+
+class UserListView(ManagerPassesTestMixin, ListView):
+    model = User
+    template_name = 'mailing/user_list.html'
+
+
+class UserUpdateView(ManagerPassesTestMixin, UpdateView):
+    model = User
+    fields = ('is_active',)
+    success_url = reverse_lazy('mailing:mailing_list')
+    template_name = 'mailing/user_form.html'

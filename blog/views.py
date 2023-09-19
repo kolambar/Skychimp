@@ -8,6 +8,8 @@ from blog.models import Blog
 
 
 # Create your views here.
+
+
 class ContentManagerMixin:
 
     def get_context_data(self, *, object_list=None, **kwargs):

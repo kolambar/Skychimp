@@ -1,0 +1,40 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+
+  <body class="bg-light">
+
+    <div class="container">
+      <div class="py-5 text-center">
+        <h2>Блокировка пользователя</h2>
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-8 order-md-1">
+          <h4 class="mb-3">Вы хотите заблокировать {{object.email}}?</h4>
+          <form class="needs-validation" method="post">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <button class="btn btn-primary btn-lg btn-block" type="submit">Подтвердить</button>
+              </div>
+            </div>
+
+
+
+            <hr class="mb-4">
+          </form>
+        </div>
+      </div>
+
+      <footer class="my-5 pt-5 text-muted text-center text-small">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a href="{% url 'mailing:user_list' %}">Обратно к рассылкам</a></li>
+        </ul>
+      </footer>
+    </div>
+
+{% endblock %}

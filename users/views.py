@@ -53,8 +53,6 @@ class RegisterView(CreateView):
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[user.email]
         )
-
-        print(verified_password)
         return super().form_valid(form)
 
 
