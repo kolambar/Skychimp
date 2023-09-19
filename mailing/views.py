@@ -30,9 +30,16 @@ class MailinCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         user = self.request.user
-        form = form.save()
-        form.owner = user
+        self.object = form.save()
+        self.object.owner = user
+
         return super().form_valid(form)
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #
+    #     context['user'] = self.request.user
+    #     return context
 
 
 class MailinDetailView(LoginRequiredMixin, DetailView):
@@ -53,6 +60,8 @@ class MailinDeleteView(LoginRequiredMixin, DeleteView):
 
 class MailinUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailin  # Модель
+
+    # тут нужно получить только клиентов этого пользователя
     form_class = MailinUpdateForm
     success_url = reverse_lazy('mailing:mailing_list')  # Адрес для перенаправления после успешного редактирования
 

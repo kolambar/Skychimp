@@ -2,7 +2,7 @@ def get_mailing():
     '''
     Получает все рассылки
     '''
-    pass
+
 
 
 def check_authentication_4_queryset():
