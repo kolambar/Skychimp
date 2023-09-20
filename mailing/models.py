@@ -77,7 +77,7 @@ class AttemptsLog(models.Model):
     lust_time = models.DateTimeField(verbose_name='дата и время', auto_now_add=True)
     status = models.BooleanField(verbose_name='статус отправки')
     comment = models.TextField(verbose_name='ответ почтового сервиса', **NULLABLE)
-    massage = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.lust_time}, {self.status}, {self.massage}'

@@ -109,13 +109,17 @@ class AttemptsLogListView(ListView):
 class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     fields = ('name', 'text',)
+
+    def form_valid(self, form):  # присваивает только что созданного клиента пользователю
+        user = self.request.user
+        instance = form.save(commit=False)
+        instance.owner = user
+        instance.save()
+        form.save_m2m()  # сохранят связи ManyToMany
+        return super().form_valid(form)
+
     success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного редактирования
 
-    def form_valid(self, form):
-        user = self.request.user
-        form = form.save()
-        form.owner = user
-        return super().form_valid(form)
 
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):

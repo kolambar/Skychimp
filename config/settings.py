@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
 
 CRONJOBS = [
-    ('*/5 * * * *', 'mailing.cron.my_scheduled_job')
+    ('*/1 * * * *', 'mailing.cron.my_scheduled_job')
 ]
 
 
