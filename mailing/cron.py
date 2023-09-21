@@ -1,24 +1,21 @@
 import os
 
-from mailing.models import Mailin, AttemptsLog
-from mailing.services import get_mailing
-import datetime
+from django.utils import timezone
+
+from mailing.services import check_pending_mailing, check_active_mailing
 
 
-def my_scheduled_job():
+DJANGO_SETTINGS_MODULE='config.settings'
+
+
+def scheduled_job():
     path = "/home/kolambar/Skychimp/hello"
     os.makedirs(path, exist_ok=True)
     print("Folder created!")
 
 
-def check_mailing():
-    now = datetime.now()
+def my_scheduled_job():
+    now = timezone.now()
 
-    mailings = Mailin.objects.filter(status='active')
-    for mailing in mailings:
-        if now < mailing.finish_time:
-            messages = mailing.message
-            for message in messages:
-                latest_attempts_log = AttemptsLog.objects.filter(message=message).latest('lust_time')
-                if now - latest_attempts_log.lust_time:
-                    pass
+    check_pending_mailing(now)
+    check_active_mailing(now)
