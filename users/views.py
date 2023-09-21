@@ -38,15 +38,18 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
 
+        # создает случайный пароль
         verified_password = ''
         for i in range(8):
             i = randint(0, 9)
             verified_password += str(i)
 
+        # сохраняет пароль к пользователю, чтобы можно было авторизировать его
         form.verified_password = verified_password
         user = form.save(commit=False)
         user.verified_password = verified_password
 
+        # Отправляет письмо на указанную почту со ссылкой. В ссылку встроен пароль для верификации этого пользователя
         send_mail(
             subject='Верификация почты',
             message=f'Если вы регистрировались в Skychimp: нажмите на ссылку: http://127.0.0.1:8000/users/verifying?code={user.verified_password}\n Так вы подтвердите почту',
@@ -57,9 +60,9 @@ class RegisterView(CreateView):
 
 
 def verify_view(request):
-    code = int(request.GET.get('code'))
-    user = User.objects.get(verified_password=code)
-    user.verified = True
+    code = int(request.GET.get('code'))  # получает код для верификации
+    user = User.objects.get(verified_password=code)  # получает пользователя с этим кодом
+    user.verified = True  # верифицирует его
     user.save()
     return render(request, 'users/verifying.html')
 
@@ -67,7 +70,7 @@ def verify_view(request):
 class PasswordResetView(BasePasswordResetView):
     template_name = 'users/password_reset_form.html'
     email_template_name = 'users/password_reset_email.html'
-    from_email = 'fuckup@oscarbot.ru'
+    from_email = settings.EMAIL_HOST_USER
     success_url = reverse_lazy('users:password_reset_done')
 
 

@@ -11,7 +11,9 @@ from blog.models import Blog
 
 
 class ContentManagerMixin:
-
+    """
+    Получает всех контент менеджеров и помещает их в контекст, чтобы проверить, входит ли текущий юзер в их число
+    """
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         content_manager_group = Group.objects.get(name='сontent_manager')
@@ -20,7 +22,9 @@ class ContentManagerMixin:
 
 
 class ContentManagerPassMixin(UserPassesTestMixin):
-
+    """
+    Ограничивает доступ для всех кроме контент-менеджеров
+    """
     def test_func(self):
         return self.request.user.groups.filter(name='сontent_manager').exists()
 
@@ -30,7 +34,7 @@ class BlogListView(ContentManagerMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset(*args, **kwargs)
-        queryset = queryset.filter(is_published=True)
+        queryset = queryset.filter(is_published=True)  # выбирает для отображения только опубликованные статьи блога
         return queryset
 
 
@@ -39,7 +43,7 @@ class BlogDetailView(ContentManagerMixin, DetailView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        self.object.views_number += 1
+        self.object.views_number += 1  # подсчитывает просмотры поста
         self.object.save()
         return self.object
 
@@ -62,9 +66,6 @@ class BlogUpdateView(ContentManagerPassMixin, UpdateView):
     model = Blog
     fields = ('header', 'text', 'image',)
     success_url = reverse_lazy('blog:blog_list')
-
-    def test_func(self):
-        return self.request.user.groups.filter(name='сontent_manager').exists()
 
 
 class BlogDeleteView(ContentManagerPassMixin, DeleteView):

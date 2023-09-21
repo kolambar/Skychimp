@@ -74,6 +74,11 @@ class Client(models.Model):
 
 
 class AttemptsLog(models.Model):
+    STATUS_CHOICES = (
+        ('active', 'Активный'),
+        ('inactive', 'Неактивный'),
+        ('pending', 'В ожидании'),
+    )
     lust_time = models.DateTimeField(verbose_name='дата и время', auto_now_add=True)
     status = models.BooleanField(verbose_name='статус отправки')
     comment = models.TextField(verbose_name='ответ почтового сервиса', **NULLABLE)
