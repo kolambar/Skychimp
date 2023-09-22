@@ -1,11 +1,13 @@
 from itertools import islice
 
 from django.contrib.auth.models import AnonymousUser
+from django.core.cache import cache
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from blog.models import Blog
+from config import settings
 from users.models import User
 from .forms import MailinCreateForm, MailinUpdateForm
 from mailing.models import AttemptsLog, Message
@@ -185,10 +187,7 @@ class UserUpdateView(ManagerPassesTestMixin, UpdateView):
     template_name = 'mailing/user_form.html'
 
 
-def home_page(request):
-    """
-    Домашняя страница
-    """
+def get_three_articles():
     articles = Blog.objects.all()  # Получить все статьи
 
     try:  # Получить первые три статьи, если их количество больше 3
@@ -196,6 +195,24 @@ def home_page(request):
     except IndexError:
         # Если статей меньше 3, вернуть все
         first_three_articles = articles
+
+    return first_three_articles
+
+
+def home_page(request):
+    """
+    Домашняя страница
+    """
+    if settings.CACHE_ENABLED:
+        key = 'first_three_articles'
+        first_three_articles = cache.get(key)
+
+        if first_three_articles is None:
+            first_three_articles = get_three_articles()
+            cache.set(key, first_three_articles)
+
+    else:
+        first_three_articles = get_three_articles()
 
     context = {
         'active_mailing_num': Mailin.objects.filter(status='active').count(),  # Количество активных рассылок
