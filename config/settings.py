@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
 
 CRONJOBS = [
-    ('*/5 * * * *', 'mailing.cron.my_scheduled_job')
+    ('*/1 * * * *', 'mailing.cron.my_scheduled_job')
 ]
 
 
@@ -92,7 +92,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DATABASES_NAME'),
         'USER': os.getenv('DATABASES_USER'),
-        'PASSWORD': os.getenv('DATABASES_PASSWORD')
+        'PASSWORD': os.getenv('DATABASES_PASSWORD'),
+        # 'PORT': 5433,
+        # 'HOST': 'localhost',
     }
 }
 

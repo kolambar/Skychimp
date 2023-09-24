@@ -1,0 +1,32 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Skychimp</h1>
+    <p class="lead">Тут можно посмотреть блог про рассылки Skychimp</p>
+</div>
+<div class="row col-md">
+    {% if user in сontent_managers %}
+        <div class="col-1"></div>
+        <nav class="ms-5">
+            <a class="p-2 btn btn-outline-primary" href="{% url 'blog:create_blog' %}">Написать блог</a>
+        </nav>
+    {% endif %}
+</div>
+<br />
+<br />
+<div class="row col-md">
+    {% for object in object_list %}
+        <div class="col-1"></div>
+
+        <div class="col-5">
+            <div class="container-fluid">
+                <div class="row text-center">
+                    {% include 'includs/inc_blog.html'|slice:":100" %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

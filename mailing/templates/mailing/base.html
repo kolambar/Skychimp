@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
 
-    <title>Jumbotron Template for Bootstrap</title>
+    <title>Skychimp</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/jumbotron/">
 
@@ -22,7 +22,7 @@
   <body>
 
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a class="navbar-brand" href="/">Меню</a>
+      <a class="navbar-brand" href="/home_page/">Домашняя страница</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -38,6 +38,15 @@
           <li class="nav-item">
             <a class="nav-link" href="/log_list">Мониторинг</a>
           </li>
+          <li class="nav-item">
+          <a class="nav-link" href="{% url 'blog:blog_list' %}">Перейти к нашему блогу</a>
+          </li>
+            {% if user.is_staff %}
+              <li class="nav-item">
+              <a class="nav-link" href="/user_list">Перейти к пользователям</a>
+              </li>
+            {% endif %}
+
           {% if user.is_authenticated %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Добавить</a>
@@ -48,12 +57,18 @@
               </div>
             </li>
           {% endif %}
+        </ul>
+        <div class="col=4"></div>
 
+        <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            {% if user.is_authenticated %}
-              <a class="text-muted" href="{% url 'users:logout' %}">Выйти</a>
+            {% if user.is_staff %}
+              <a class="text-muted" href="{% url 'blog:create_blog' %}">Написать новый блог</a>
               <div class="col=1"></div>
-              <a class="text-muted" href="/products_create/">Добавить продукт</a>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+              <a class="text-muted" href="{% url 'users:logout' %}">Выйти ({{request.user}})</a>
             {% else %}
               <a class="text-muted" href="{% url 'users:login' %}">Войти</a>
               <div class="col=1"></div>

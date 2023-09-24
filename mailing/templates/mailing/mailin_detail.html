@@ -5,7 +5,6 @@
         <div class="container">
           <h1 class="display-3">Рассылка "{{object.name}}"</h1>
           <p>В этом разделе вы можете посмотреть детали рассылки и добавить клиентов или перейти к редактированию.<p>
-          <a class="btn btn-primary btn-lg" href="create_mailing" role="button">Редактировать &raquo;</a></p>
         </div>
       </div>
 
@@ -15,25 +14,37 @@
           <p>Сообщения:<p>
           {% for message in object.message.all %}
             <p>{{ message }}<p>
-            <div class="btn-group" role="group">
-              <p><a class="btn btn-secondary" href="{% url 'mailing:update_message' message.pk %}" role="button">Изменить &raquo;</a></p>
-              <hr />
-              <p><a class="btn btn-danger" href="{% url 'mailing:delete_message' message.pk %}" role="button">Удалить &raquo;</a></p>
-            </div>
+              {% if object.owner == user %}
+
+                <div class="btn-group" role="group">
+                  <p><a class="btn btn-secondary" href="{% url 'mailing:update_message' message.pk %}" role="button">Изменить &raquo;</a></p>
+                  <hr />
+                  <p><a class="btn btn-danger" href="{% url 'mailing:delete_message' message.pk %}" role="button">Удалить &raquo;</a></p>
+                </div>
+              {% endif %}
+
         {% endfor %}
         <hr>
 
           <p>Клиенты:<p>
           {% for client in list_clients %}
             <p>- {{client.name}} ({{client.email}})<p>
-            <p><a class="btn btn-secondary" href="{% url 'mailing:detail_client' client.pk %}" role="button">Подробнее &raquo;</a></p>
+              {% if object.owner == user %}
+                <p><a class="btn btn-secondary" href="{% url 'mailing:detail_client' client.pk %}" role="button">Подробнее &raquo;</a></p>
+              {% endif %}
+
           {% endfor %}
         <hr>
 
         <div class="btn-group" role="group">
-          <a class="btn btn-primary btn-lg" href="/create_client" role="button">Добавить клиента &raquo;</a></p>
-          <p><a class="btn btn-secondary" href="{% url 'mailing:update_mailing' object.slug %}" role="button">Изменить &raquo;</a></p>
-          <p><a class="btn btn-danger" href="{% url 'mailing:delete_mailing' object.slug %}" role="button">Удалить &raquo;</a></p>
+          {% if object.owner == user %}
+            <a class="btn btn-primary btn-lg" href="/create_client" role="button">Добавить клиента &raquo;</a></p>
+            <p><a class="btn btn-secondary" href="{% url 'mailing:update_mailing' object.slug %}" role="button">Изменить &raquo;</a></p>
+            <p><a class="btn btn-danger" href="{% url 'mailing:delete_mailing' object.slug %}" role="button">Удалить &raquo;</a></p>
+          {% else %}
+            <p><a class="btn btn-secondary" href="{% url 'mailing:manager_update_mailing' object.slug %}" role="button">Изменить &raquo;</a></p>
+          {% endif %}
+
         </div>
       </div>
 

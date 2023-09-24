@@ -5,8 +5,12 @@
       <div class="jumbotron">
         <div class="container">
           <h1 class="display-3">Список рассылок</h1>
-          <p>В этом разделе вы можете посмотреть список рассылок или добавить новую.<p>
-          <a class="btn btn-primary btn-lg" href="create_mailing" role="button">Добавить рассылку &raquo;</a></p>
+            {% if user.is_authenticated %}
+              <p>В этом разделе вы можете посмотреть список рассылок или добавить новую.<p>
+              <a class="btn btn-primary btn-lg" href="create_mailing" role="button">Добавить рассылку &raquo;</a></p>
+            {% else %}
+                <p>В этом разделе вы увидите список своих рассылок после авторизации<p>
+            {% endif %}
         </div>
       </div>
       <div class="container">

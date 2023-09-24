@@ -2,6 +2,7 @@ from django.utils.text import slugify
 from unidecode import unidecode
 from django.db import models
 
+from users.models import User
 
 # Create your models here.
 
@@ -12,6 +13,7 @@ NULLABLE = {'blank': True, 'null': True}
 class Message(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название/тема')
     text = models.TextField(verbose_name='текст')
+    owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}'
@@ -42,6 +44,7 @@ class Mailin(models.Model):
     interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, verbose_name='интервал рассылки')
     status = models.CharField(max_length=10, blank=True, default='pending', verbose_name='статус')
     message = models.ManyToManyField(Message, verbose_name='сообщение', **NULLABLE)
+    owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(unidecode(str(self.name)))
@@ -60,6 +63,7 @@ class Client(models.Model):
     email = models.EmailField(unique=True, verbose_name='электронная почта')
     comment = models.TextField(verbose_name='комментарий', **NULLABLE)
     mailin = models.ManyToManyField(Mailin, verbose_name='рассылки')
+    owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}, {self.email}'
@@ -70,13 +74,18 @@ class Client(models.Model):
 
 
 class AttemptsLog(models.Model):
-    lust_time = models.DateTimeField(verbose_name='дата и время', auto_now_add=True)
+    STATUS_CHOICES = (
+        ('active', 'Активный'),
+        ('inactive', 'Неактивный'),
+        ('pending', 'В ожидании'),
+    )
+    last_time = models.DateTimeField(verbose_name='дата и время', auto_now_add=True)
     status = models.BooleanField(verbose_name='статус отправки')
     comment = models.TextField(verbose_name='ответ почтового сервиса', **NULLABLE)
-    massage = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, verbose_name='сообщение', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.lust_time}, {self.status}, {self.massage}'
+        return f'{self.last_time}, {self.status}, {self.message}'
 
     class Meta:
         verbose_name = 'Попытка'

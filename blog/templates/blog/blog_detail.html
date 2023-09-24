@@ -1,0 +1,21 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Skychimp</h1>
+    <p class="lead">Пост</p>
+</div>
+<div class="container">
+    <div class="row text-center">
+        {% include 'includs/inc_blog.html' %}
+        <div class="col-2">
+            <div style="text-align: right;">
+                <img src="{{ object.photo | mymedia }}" class="img-thumbnail" alt="Responsive image">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,10 +1,20 @@
-from mailing.services import get_mailing
-import datetime
+import os
+
+from django.utils import timezone
+
+from mailing.services import check_pending_mailing, check_active_mailing
+
+
+DJANGO_SETTINGS_MODULE='config.settings'
 
 
 def my_scheduled_job():
-    mailings = get_mailing()
-    now = datetime.now()
-    for mailing in mailings:
-        if mailing.start_time < now < mailing.finish_time:
-            pass  # проверяет, прошло ли необходимое время с прошлой рассылки
+    """
+    Объединяет в себе функции для проверки рассылок, которые пора запускать,
+    и тех что пора останавливать или отправлять их сообщения,
+    а так же дает общее время now для этих двух функций
+    """
+    now = timezone.now()
+
+    check_pending_mailing(now)
+    check_active_mailing(now)

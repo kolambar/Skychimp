@@ -5,8 +5,12 @@
       <div class="jumbotron">
         <div class="container">
           <h1 class="display-3">Список клиентов</h1>
-          <p>В этом разделе вы можете посмотреть список клиентов или добавить нового.<p>
-          <a class="btn btn-primary btn-lg" href="/create_client" role="button">Добавить клиента &raquo;</a></p>
+            {% if user.is_authenticated %}
+                <p>В этом разделе вы можете посмотреть список клиентов или добавить нового.<p>
+                <a class="btn btn-primary btn-lg" href="/create_client" role="button">Добавить клиента &raquo;</a></p>
+            {% else %}
+                <p>В этом разделе вы увидите список своих клиентов после авторизации<p>
+            {% endif %}
         </div>
       </div>
       <div class="container">
@@ -14,8 +18,8 @@
           <div class="row">
             <div class="col-md-4">
               <h2>ФИО: "{{ object.name|title }}"</h2>
-              <p>Почта: {{ object.email }}</p>
-              <p>Информация: {{ object.comment }}</p>
+              <p>Почта: {{object.email}}</p>
+              <p>Информация: {{object.comment}}</p>
               <p><a class="btn btn-secondary" href="{% url 'mailing:detail_client' object.pk %}" role="button">Детали &raquo;</a></p>
             </div>
           </div>
