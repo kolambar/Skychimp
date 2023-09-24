@@ -12,11 +12,12 @@
         {% for object in object_list %}
           <div class="row">
             <div class="col-md-4">
-              <h2>Название: "{{ object.lust_time }}"</h2>
-              <p>Время отправки: {{ object.status }}</p>
-              <p>Периодичность: {{ object.comment }}</p>
-              <p>Периодичность: {{ object.massage }}</p>
-
+              <h2>Время отправки: "{{ object.last_time }}"</h2>
+              {% if object.status %}
+                  <p>Статус: успешно</p>
+              {% else %}
+                  <p>Статус: не отправлено</p>
+              {% endif %}
             </div>
           </div>
           <hr>

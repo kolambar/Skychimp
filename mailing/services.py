@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 
 from config import settings
@@ -41,9 +42,9 @@ def send_mail_save_log(
     answer = send_mail(message.name, message.text, email_host, recipient_list)
 
     if answer:
-        AttemptsLog.objects.create(lust_time=now, status=True, comment='Отправлено', message=message)
+        AttemptsLog.objects.create(last_time=now, status=True, comment='Отправлено', message=message)
     else:
-        AttemptsLog.objects.create(lust_time=now, status=False, comment='Не отправлено', message=message)
+        AttemptsLog.objects.create(last_time=now, status=False, comment='Не отправлено', message=message)
 
 
 def check_pending_mailing(now):
@@ -66,26 +67,28 @@ def check_active_mailing(now):
     mailings = Mailin.objects.filter(status='active')  # подгружает активные рассылки из БД
 
     for mailing in mailings:
-
         if now < mailing.finish_time:  # проверяет, не пришло ли время остановить рассылку
-            messages = mailing.message
+            messages = mailing.message.all()
             recipient_list = get_client_emails_list(mailing)
 
             for message in messages:
-                # у каждого сообщения достает последний лог отправки, чтобы проверить не пришло ши время отправить
-                latest_attempts_log = AttemptsLog.objects.filter(message=message).latest('lust_time')
-                if not latest_attempts_log.exist():  # если не отправлялось ни разу
-
+                try:
+                    # у каждого сообщения достает последний лог отправки, чтобы проверить не пришло ши время отправить
+                    latest_attempts_log = AttemptsLog.objects.filter(message=message).latest('last_time')
+                # Если нет объектов
+                except ObjectDoesNotExist:
                     #  отправляет сообщения клиентам рассылки и получает ответ от почтового сервиса
-                    send_mail_save_log(message, settings.EMAIL_HOST, recipient_list, now)
+                    send_mail_save_log(message.name, settings.EMAIL_HOST_USER, recipient_list, now)
 
+                # Если объект найден
                 else:
-                    # с прошлой отправки прошло больше времени, чем интервал, или прошлое сообщение не было отправлено
-                    if ((now - latest_attempts_log.lust_time).days >= swap_time_to_num(mailing.interval)
-                            or not latest_attempts_log.status):
+                    # с прошлой отправки прошло больше времени, чем интервал,
+
+                    if ((now - latest_attempts_log.last_time).days >= swap_time_to_num(mailing.interval)
+                            or not latest_attempts_log.status):  # или прошлое сообщение не было отправлено
 
                         #  отправляет сообщения клиентам рассылки и получает ответ от почтового сервиса
-                        send_mail_save_log(message, settings.EMAIL_HOST, recipient_list, now)
+                        send_mail_save_log(message, settings.EMAIL_HOST_USER, recipient_list, now)
 
         # если время рассылки вышло
         else:

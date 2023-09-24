@@ -28,6 +28,6 @@ class MessageAdmin(admin.ModelAdmin):
 
 @admin.register(AttemptsLog)
 class AttemptsAdmin(admin.ModelAdmin):
-    list_display = ('lust_time', 'status', 'comment')
+    list_display = ('last_time', 'status', 'comment')
     list_filter = ('status',)
-    search_fields = ('lust_time', 'status', 'comment',)
+    search_fields = ('last_time', 'status', 'comment',)
