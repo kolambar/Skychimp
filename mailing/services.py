@@ -1,3 +1,4 @@
+import logging
 from itertools import islice
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -54,12 +55,16 @@ def send_mail_save_log(
     """
     Отправляет сообщения и пишет лог (создает экземпляр AttemptsLog)
     """
-    answer = send_mail(message.name, message.text, email_host, recipient_list)
-
-    if answer:
-        AttemptsLog.objects.create(last_time=now, status=True, comment='Отправлено', message=message)
+    try:
+        answer = send_mail(subject=message.name, message=message.text, from_email=email_host, recipient_list=recipient_list)
+    except Exception as e:
+        logging.error(f"Error sending email: {e}")
     else:
-        AttemptsLog.objects.create(last_time=now, status=False, comment='Не отправлено', message=message)
+        if answer:
+            AttemptsLog.objects.create(last_time=now, status=True, comment='Отправлено', message=message)
+        else:
+            AttemptsLog.objects.create(last_time=now, status=False, comment='Не отправлено', message=message)
+
 
 
 def check_pending_mailing(now):
