@@ -27,13 +27,9 @@ def get_client_emails_list(mailing):
     """
     Возвращает список с email клиентов рассылки
     """
-    clients = Client.objects.filter(mailin=mailing)  # подгружает клиентов из БД
-    recipient_list = []
-
-    for client in clients:
-        recipient_list.append(client.email)
-
-    return recipient_list
+    # Подгружает клиентов из БД в list
+    emails_of_clients = Client.objects.filter(mailin=mailing).values_list('email', flat=True)
+    return emails_of_clients
 
 
 def swap_time_to_num(interval):
@@ -96,7 +92,8 @@ def check_active_mailing(now):
     Проверяет активные рассылки. Если время подошло, меняет Mailin.status с "active" на "inactive".
     Если пришло время отправлять сообщение с прошлой отправки, отправляет их.
     """
-    mailings = Mailin.objects.filter(status='active')  # подгружает активные рассылки из БД
+    # подгружает активные рассылки из БД
+    mailings = Mailin.objects.filter(status='active').prefetch_related("message")
 
     for mailing in mailings:
         if now < mailing.finish_time:  # проверяет, не пришло ли время остановить рассылку

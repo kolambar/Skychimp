@@ -25,7 +25,7 @@ class MailinListView(ListView):
             return Mailin.objects.none()
         elif user.groups.filter(name='manager').exists():  # Менеджеру показывает все рассылки
             return super().get_queryset()
-        return Mailin.objects.filter(owner=user)  # для каждого обычного пользователя показывает только его рассылки
+        return Mailin.objects.filter(owner=user)  # Для каждого обычного пользователя показывает только его рассылки
 
 
 class MailinCreateView(LoginRequiredMixin, CreateView):
@@ -201,10 +201,10 @@ def home_page(request):
         first_three_articles = get_three_articles()
 
     context = {
-        'active_mailing_num': Mailin.objects.filter(status='active').count(),  # Количество активных рассылок
         'all_mailing_num': Mailin.objects.count(),  # Количество всех рассылок
+        'active_mailing_num': Mailin.objects.filter(status='active').count(),  # Количество активных рассылок
         'clients_num': Client.objects.count(),  # Количество клиентов
-        'articles': first_three_articles  # статьи из блога
+        'articles': first_three_articles  # Статьи из блога
     }
 
     return render(request, 'mailing/home_page.html', context)

@@ -14,8 +14,8 @@ class ContentManagerMixin:
     """
     Получает всех контент менеджеров и помещает их в контекст, чтобы проверить, входит ли текущий юзер в их число
     """
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         # Когда приложение только ставится на сервер, группы 'сontent_manager' не существует
         try:
             content_manager_group = Group.objects.get(name='сontent_manager')
