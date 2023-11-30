@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from itertools import islice
 
@@ -7,6 +8,7 @@ from django.core.mail import send_mail
 from blog.models import Blog
 from config import settings
 from mailing.models import Mailin, AttemptsLog, Client, Message
+from telegram_bot.send_message_bot import send_to_tg
 
 
 def get_three_articles():
@@ -56,15 +58,25 @@ def send_mail_save_log(
     Отправляет сообщения и пишет лог (создает экземпляр AttemptsLog)
     """
     try:
-        answer = send_mail(subject=message.name, message=message.text, from_email=email_host, recipient_list=recipient_list)
+        answer = send_mail(subject=message.name,
+                           message=message.text,
+                           from_email=email_host,
+                           recipient_list=recipient_list
+                           )
     except Exception as e:
         logging.error(f"Error sending email: {e}")
     else:
         if answer:
             AttemptsLog.objects.create(last_time=now, status=True, comment='Отправлено', message=message)
+            # Асинхронная отправко сообщения в телеграмме
+            asyncio.run(send_to_tg(settings.TELEGRAM_TOKEN, message.owner.telegram_id,
+                                   f' Сообщение"{message.name}" отправлено Вашим клиентам!'))
         else:
             AttemptsLog.objects.create(last_time=now, status=False, comment='Не отправлено', message=message)
-
+            # Асинхронная отправко сообщения в телеграмме
+            asyncio.run(send_to_tg(settings.TELEGRAM_TOKEN, message.owner.telegram_id,
+                                   f' Сообщение "{message.name}" не отправлено!\nПриносим извинения.\n'
+                                   f'Обратитесь, пожалуйста, в поддержку.'))
 
 
 def check_pending_mailing(now):
@@ -98,7 +110,7 @@ def check_active_mailing(now):
                 # Если нет объектов
                 except ObjectDoesNotExist:
                     #  отправляет сообщения клиентам рассылки и получает ответ от почтового сервиса
-                    send_mail_save_log(message.name, settings.EMAIL_HOST_USER, recipient_list, now)
+                    send_mail_save_log(message, settings.EMAIL_HOST_USER, recipient_list, now)
 
                 # Если объект найден
                 else:
