@@ -1,9 +1,4 @@
 from random import randint
-# from django.contrib.auth.views import PasswordResetView as BasePasswordResetView
-# from django.contrib.auth.views import PasswordResetView as BasePasswordResetView
-# from django.contrib.auth.views import PasswordResetView as BasePasswordResetView
-# from django.contrib.auth.views import PasswordResetView as BasePasswordResetView
-
 from django.contrib.auth.views import (PasswordResetDoneView as BasePasswordResetDoneView,
                                        PasswordResetView as BasePasswordResetView,
                                        PasswordResetConfirmView as BasePasswordResetConfirmView,
@@ -52,7 +47,8 @@ class RegisterView(CreateView):
         # Отправляет письмо на указанную почту со ссылкой. В ссылку встроен пароль для верификации этого пользователя
         send_mail(
             subject='Верификация почты',
-            message=f'Если вы регистрировались в Skychimp: нажмите на ссылку: http://127.0.0.1:8000/users/verifying?code={user.verified_password}\n Так вы подтвердите почту',
+            message=f'Если вы регистрировались в Skychimp, нажмите на ссылку: '
+                    f'http://127.0.0.1:8000/users/verifying?code={user.verified_password}\n Так вы подтвердите почту',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[user.email]
         )

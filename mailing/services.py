@@ -1,8 +1,23 @@
+from itertools import islice
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 
+from blog.models import Blog
 from config import settings
 from mailing.models import Mailin, AttemptsLog, Client, Message
+
+
+def get_three_articles():
+    articles = Blog.objects.all()  # Получить все статьи
+
+    try:  # Получить первые три статьи, если их количество больше 3
+        first_three_articles = list(islice(articles, 3))
+    except IndexError:
+        # Если статей меньше 3, вернуть все
+        first_three_articles = articles
+
+    return first_three_articles
 
 
 def get_client_emails_list(mailing):

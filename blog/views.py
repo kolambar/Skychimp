@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy, reverse
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse_lazy
 from pytils.translit import slugify
 
 from blog.models import Blog
@@ -16,8 +16,12 @@ class ContentManagerMixin:
     """
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
-        content_manager_group = Group.objects.get(name='сontent_manager')
-        context['сontent_managers'] = content_manager_group.user_set.all()
+        # Когда приложение только ставится на сервер, группы 'сontent_manager' не существует
+        try:
+            content_manager_group = Group.objects.get(name='сontent_manager')
+            context['сontent_managers'] = content_manager_group.user_set.all()
+        except Group.DoesNotExist:
+            context['сontent_managers'] = None
         return context
 
 
@@ -56,7 +60,7 @@ class BlogCreateView(ContentManagerPassMixin, CreateView):
     def form_valid(self, form):
         if form.is_valid():
             new_mat = form.save()
-            new_mat.slug = slugify(new_mat.header)
+            new_mat.slug = slugify(new_mat.header)  # Делает slug для поста
             new_mat.save()
 
         return super().form_valid(form)
