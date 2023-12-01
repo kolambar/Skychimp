@@ -16,7 +16,7 @@ from .services import get_three_articles
 # Create your views here.
 
 
-class MailinListView(ListView):
+class MailinListView(LoginRequiredMixin, ListView):
     model = Mailin
 
     def get_queryset(self):
@@ -33,14 +33,14 @@ class MailinCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного создания
 
     def form_valid(self, form):
-        user = self.request.user  # получает текущего пользователя, который отправил форму
+        user = self.request.user  # Получает текущего пользователя, который отправил форму
         self.object = form.save()
-        self.object.owner = user  # сохраняет автора
+        self.object.owner = user  # Сохраняет автора
         self.object.save()
 
         return super().form_valid(form)
 
-    def get_form_class(self):  # предлагает только клиентов, которых создал пользователь
+    def get_form_class(self):  # Предлагает только клиентов, которых создал пользователь\
         model_form = MailinCreateForm
         model_form.base_fields['clients'].limit_choices_to = {'owner': self.request.user}
         return model_form
@@ -52,7 +52,7 @@ class MailinDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         mailin = self.object
-        clients = Client.objects.filter(mailin=mailin)  # показывает только клиентов этой рассылки
+        clients = Client.objects.filter(mailin=mailin)  # Показывает только клиентов этой рассылки
         context['list_clients'] = clients
         return context
 
@@ -95,16 +95,16 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
     fields = ('name', 'comment', 'email', 'mailin')
 
     def get_form_class(self):
-        model_form = super().get_form_class()  # дает выбирать только сообщения созданные пользователем
+        model_form = super().get_form_class()  # Дает выбирать только сообщения созданные пользователем
         model_form.base_fields['mailin'].limit_choices_to = {'owner': self.request.user}
         return model_form
 
-    def form_valid(self, form):  # присваивает только что созданного клиента пользователю
+    def form_valid(self, form):  # Присваивает только что созданного клиента пользователю
         user = self.request.user
         instance = form.save(commit=False)
         instance.owner = user
         instance.save()
-        form.save_m2m()  # сохранят связи ManyToMany
+        form.save_m2m()  # Сохранят связи ManyToMany
         return super().form_valid(form)
 
     success_url = reverse_lazy('mailin:mailing_list')
@@ -115,9 +115,9 @@ class ClientListView(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        if isinstance(user, AnonymousUser):  # если не авторизирован, клиентов не показывает
+        if isinstance(user, AnonymousUser):  # Если не авторизирован, клиентов не показывает
             return Client.objects.none()
-        return Client.objects.filter(owner=user)  # показывает клиентов только созданных пользователем
+        return Client.objects.filter(owner=user)  # Показывает клиентов только созданных пользователем
 
 
 class AttemptsLogListView(ListView):
@@ -128,12 +128,12 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     fields = ('name', 'text',)
 
-    def form_valid(self, form):  # присваивает только что созданного клиента пользователю
+    def form_valid(self, form):  # Присваивает только что созданного клиента пользователю
         user = self.request.user
         instance = form.save(commit=False)
         instance.owner = user
         instance.save()
-        form.save_m2m()  # сохранят связи ManyToMany
+        form.save_m2m()  # Сохранят связи ManyToMany
         return super().form_valid(form)
 
     success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного редактирования
