@@ -65,13 +65,13 @@ class MailinDeleteView(LoginRequiredMixin, DeleteView):
 class MailinUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailin  # Модель
 
-    # тут нужно получить только клиентов этого пользователя
+    # Тут нужно получить только клиентов этого пользователя
     form_class = MailinUpdateForm
     success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного редактирования
 
-    def get_form_class(self):  # предлагает только клиентов, которых создал пользователь
+    def get_form_class(self):  # Предлагает только клиентов, которых создал пользователь
         model_form = MailinUpdateForm
-        # следит за тем чтобы предложены только клиенты и сообщения созданные этим пользователем
+        # Следит за тем чтобы предложены только клиенты и сообщения созданные этим пользователем
         model_form.base_fields['clients'].limit_choices_to = {'owner': self.request.user}
         model_form.base_fields['message'].limit_choices_to = {'owner': self.request.user}
 
