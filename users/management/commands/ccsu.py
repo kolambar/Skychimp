@@ -8,7 +8,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not User.objects.filter(email='admin@gmail.com').exists():
             user = User.objects.create(
-                email='admin@gmail.com',
+                email='admin@gmail.com',  # Логин
                 first_name='Admin',
                 last_name='Admin',
                 verified_password=1,
@@ -18,5 +18,5 @@ class Command(BaseCommand):
                 is_active=True
             )
 
-            user.set_password('6002')
+            user.set_password('6002')  # Пароль
             user.save()

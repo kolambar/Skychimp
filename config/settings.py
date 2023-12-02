@@ -95,8 +95,11 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'PORT': '5432',
+
     }
 }
+
+DEFAULT_CHARSET = 'utf-8'
 
 
 # Password validation

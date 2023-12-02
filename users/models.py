@@ -18,7 +18,7 @@ class User(AbstractUser):
     verified = models.BooleanField(default=False, verbose_name='верифицирован', blank=True)
     verified_password = models.IntegerField(verbose_name='ключ для верификации')
 
-    telegram = models.URLField(verbose_name='ссылка на телеграмм', **NULLABLE, max_length=200)
+    telegram = models.URLField(verbose_name='ссылка на телеграмм (для уведомлений)', **NULLABLE, max_length=200)
     telegram_id = models.CharField(verbose_name='id телеграмма', **NULLABLE)
 
 
