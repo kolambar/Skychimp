@@ -31,6 +31,7 @@ class MailinListView(LoginRequiredMixin, ListView):
 class MailinCreateView(LoginRequiredMixin, CreateView):
     model = Mailin
     success_url = reverse_lazy('mailin:mailing_list')  # Адрес для перенаправления после успешного создания
+    print('создание')
 
     def form_valid(self, form):
         user = self.request.user  # Получает текущего пользователя, который отправил форму
