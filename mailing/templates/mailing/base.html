@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
 
     <title>Skychimp</title>
 
@@ -64,6 +63,11 @@
           <li class="nav-item">
             {% if user.is_staff %}
               <a class="text-muted" href="{% url 'blog:create_blog' %}">Написать новый блог</a>
+              <div class="col=1"></div>
+            {% endif %}
+
+            {% if not user.telegram %}
+              <a class="text-muted" href="https://t.me/DispatchNotifierBot" target="_blank">Привязать Telegram</a>
               <div class="col=1"></div>
             {% endif %}
 

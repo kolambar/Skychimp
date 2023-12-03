@@ -1,21 +1,35 @@
+import asyncio
+import logging
+from itertools import islice
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 
+from blog.models import Blog
 from config import settings
 from mailing.models import Mailin, AttemptsLog, Client, Message
+from telegram_bot.send_message_bot import send_to_tg
+
+
+def get_three_articles():
+    articles = Blog.objects.all()  # Получить все статьи
+
+    try:  # Получить первые три статьи, если их количество больше 3
+        first_three_articles = list(islice(articles, 3))
+    except IndexError:
+        # Если статей меньше 3, вернуть все
+        first_three_articles = articles
+
+    return first_three_articles
 
 
 def get_client_emails_list(mailing):
     """
     Возвращает список с email клиентов рассылки
     """
-    clients = Client.objects.filter(mailin=mailing)  # подгружает клиентов из БД
-    recipient_list = []
-
-    for client in clients:
-        recipient_list.append(client.email)
-
-    return recipient_list
+    # Подгружает клиентов из БД в list
+    emails_of_clients = Client.objects.filter(mailin=mailing).values_list('email', flat=True)
+    return emails_of_clients
 
 
 def swap_time_to_num(interval):
@@ -39,12 +53,26 @@ def send_mail_save_log(
     """
     Отправляет сообщения и пишет лог (создает экземпляр AttemptsLog)
     """
-    answer = send_mail(message.name, message.text, email_host, recipient_list)
-
-    if answer:
-        AttemptsLog.objects.create(last_time=now, status=True, comment='Отправлено', message=message)
+    try:
+        answer = send_mail(subject=message.name,
+                           message=message.text,
+                           from_email=email_host,
+                           recipient_list=recipient_list
+                           )
+    except Exception as e:
+        logging.error(f"Error sending email: {e}")
     else:
-        AttemptsLog.objects.create(last_time=now, status=False, comment='Не отправлено', message=message)
+        if answer:
+            AttemptsLog.objects.create(last_time=now, status=True, comment='Отправлено', message=message)
+            # Асинхронная отправко сообщения в телеграмме
+            asyncio.run(send_to_tg(settings.TELEGRAM_TOKEN, message.owner.telegram_id,
+                                   f' Сообщение"{message.name}" отправлено Вашим клиентам!'))
+        else:
+            AttemptsLog.objects.create(last_time=now, status=False, comment='Не отправлено', message=message)
+            # Асинхронная отправко сообщения в телеграмме
+            asyncio.run(send_to_tg(settings.TELEGRAM_TOKEN, message.owner.telegram_id,
+                                   f' Сообщение "{message.name}" не отправлено!\nПриносим извинения.\n'
+                                   f'Обратитесь, пожалуйста, в поддержку.'))
 
 
 def check_pending_mailing(now):
@@ -64,7 +92,8 @@ def check_active_mailing(now):
     Проверяет активные рассылки. Если время подошло, меняет Mailin.status с "active" на "inactive".
     Если пришло время отправлять сообщение с прошлой отправки, отправляет их.
     """
-    mailings = Mailin.objects.filter(status='active')  # подгружает активные рассылки из БД
+    # подгружает активные рассылки из БД
+    mailings = Mailin.objects.filter(status='active').prefetch_related("message")
 
     for mailing in mailings:
         if now < mailing.finish_time:  # проверяет, не пришло ли время остановить рассылку
@@ -78,12 +107,11 @@ def check_active_mailing(now):
                 # Если нет объектов
                 except ObjectDoesNotExist:
                     #  отправляет сообщения клиентам рассылки и получает ответ от почтового сервиса
-                    send_mail_save_log(message.name, settings.EMAIL_HOST_USER, recipient_list, now)
+                    send_mail_save_log(message, settings.EMAIL_HOST_USER, recipient_list, now)
 
                 # Если объект найден
                 else:
                     # с прошлой отправки прошло больше времени, чем интервал,
-
                     if ((now - latest_attempts_log.last_time).days >= swap_time_to_num(mailing.interval)
                             or not latest_attempts_log.status):  # или прошлое сообщение не было отправлено
 

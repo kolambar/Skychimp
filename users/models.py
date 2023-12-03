@@ -4,9 +4,6 @@ from django.db import models
 NULLABLE = {'blank': True, 'null': True}
 
 
-# Create your models here.
-
-
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name='Email')
@@ -18,6 +15,8 @@ class User(AbstractUser):
     verified = models.BooleanField(default=False, verbose_name='верифицирован', blank=True)
     verified_password = models.IntegerField(verbose_name='ключ для верификации')
 
+    telegram = models.URLField(verbose_name='ссылка на телеграмм (для уведомлений)', **NULLABLE, max_length=200)
+    telegram_id = models.CharField(verbose_name='id телеграмма', **NULLABLE)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

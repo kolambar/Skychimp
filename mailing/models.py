@@ -43,7 +43,7 @@ class Mailin(models.Model):
     finish_time = models.DateTimeField(verbose_name='время остановки рассылки', **NULLABLE)
     interval = models.CharField(max_length=10, choices=INTERVAL_CHOICES, verbose_name='интервал рассылки')
     status = models.CharField(max_length=10, blank=True, default='pending', verbose_name='статус')
-    message = models.ManyToManyField(Message, verbose_name='сообщение', **NULLABLE)
+    message = models.ManyToManyField(Message, verbose_name='сообщение')
     owner = models.ForeignKey(User, verbose_name='создатель', null=True, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy, reverse
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse_lazy
 from pytils.translit import slugify
 
 from blog.models import Blog
@@ -14,10 +14,14 @@ class ContentManagerMixin:
     """
     Получает всех контент менеджеров и помещает их в контекст, чтобы проверить, входит ли текущий юзер в их число
     """
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data()
-        content_manager_group = Group.objects.get(name='сontent_manager')
-        context['сontent_managers'] = content_manager_group.user_set.all()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Когда приложение только ставится на сервер, группы 'content_manager' не существует
+        try:
+            content_manager_group = Group.objects.get(name='content_manager')
+            context['content_manager'] = content_manager_group.user_set.all()
+        except Group.DoesNotExist:
+            context['content_manager'] = None
         return context
 
 
@@ -26,7 +30,7 @@ class ContentManagerPassMixin(UserPassesTestMixin):
     Ограничивает доступ для всех кроме контент-менеджеров
     """
     def test_func(self):
-        return self.request.user.groups.filter(name='сontent_manager').exists()
+        return self.request.user.groups.filter(name='content_manager').exists()
 
 
 class BlogListView(ContentManagerMixin, ListView):
@@ -56,7 +60,7 @@ class BlogCreateView(ContentManagerPassMixin, CreateView):
     def form_valid(self, form):
         if form.is_valid():
             new_mat = form.save()
-            new_mat.slug = slugify(new_mat.header)
+            new_mat.slug = slugify(new_mat.header)  # Делает slug для поста
             new_mat.save()
 
         return super().form_valid(form)
