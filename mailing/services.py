@@ -112,7 +112,6 @@ def check_active_mailing(now):
                 # Если объект найден
                 else:
                     # с прошлой отправки прошло больше времени, чем интервал,
-
                     if ((now - latest_attempts_log.last_time).days >= swap_time_to_num(mailing.interval)
                             or not latest_attempts_log.status):  # или прошлое сообщение не было отправлено
 

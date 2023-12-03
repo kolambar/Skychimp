@@ -16,12 +16,12 @@ class ContentManagerMixin:
     """
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Когда приложение только ставится на сервер, группы 'сontent_manager' не существует
+        # Когда приложение только ставится на сервер, группы 'content_manager' не существует
         try:
-            content_manager_group = Group.objects.get(name='сontent_manager')
-            context['сontent_managers'] = content_manager_group.user_set.all()
+            content_manager_group = Group.objects.get(name='content_manager')
+            context['content_manager'] = content_manager_group.user_set.all()
         except Group.DoesNotExist:
-            context['сontent_managers'] = None
+            context['content_manager'] = None
         return context
 
 
@@ -30,7 +30,7 @@ class ContentManagerPassMixin(UserPassesTestMixin):
     Ограничивает доступ для всех кроме контент-менеджеров
     """
     def test_func(self):
-        return self.request.user.groups.filter(name='сontent_manager').exists()
+        return self.request.user.groups.filter(name='content_manager').exists()
 
 
 class BlogListView(ContentManagerMixin, ListView):
