@@ -77,6 +77,19 @@ class MailinUpdateView(LoginRequiredMixin, UpdateView):
 
         return model_form
 
+    def form_valid(self, form):
+        # Сохраняет рассылку
+        mailin = form.save()
+
+        # Получает клиентов, связанных с этой рассылкой
+        clients = form.cleaned_data['clients']
+
+        # Проходим по всем клиентам и добавляет в поле mailin эту рассылку
+        for client in clients:
+            client.mailin.add(mailin)
+            client.save()
+        return super().form_valid(form)
+
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
     model = Client
