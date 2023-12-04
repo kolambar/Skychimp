@@ -6,7 +6,7 @@
     <p class="lead">Тут можно посмотреть блог про рассылки Skychimp</p>
 </div>
 <div class="row col-md">
-    {% if user in сontent_managers %}
+    {% if user in content_managers %}
         <div class="col-1"></div>
         <nav class="ms-5">
             <a class="p-2 btn btn-outline-primary" href="{% url 'blog:create_blog' %}">Написать блог</a>
